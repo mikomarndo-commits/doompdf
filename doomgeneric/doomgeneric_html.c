@@ -5,12 +5,14 @@
 #include "doomgeneric.h"
 #include "doomkeys.h"
 
+#define TARGET_FPS 60
+
 uint32_t start_time;
 int frame_count = 0;
 
 uint32_t get_time() {
   return EM_ASM_INT({
-    return Date.now();
+    return performance.now() | 0;
   });
 }
 
@@ -45,55 +47,49 @@ int DG_GetKey(int* pressed, unsigned char* doomKey) {
 void DG_SetWindowTitle(const char * title) {}
 
 int key_to_doomkey(int key) {
-  if (key == 97) //a
+  if (key == 37)
     return KEY_LEFTARROW;
-  if (key == 100) //d
+  if (key == 39)
     return KEY_RIGHTARROW;
-  if (key == 119) //w
+  if (key == 38)
     return KEY_UPARROW;
-  if (key == 115) //s
+  if (key == 40)
     return KEY_DOWNARROW;
-  if (key == 113) //q
+  if (key == 27)
     return KEY_ESCAPE;
-  if (key == 122) //z
+  if (key == 13)
     return KEY_ENTER;
-  if (key == 101) //e
+  if (key == 32)
     return KEY_USE;
-  if (key == 32) //<space>
+  if (key == 17)
     return KEY_FIRE;
-  if (key == 109) //,
+  if (key == 9)
     return KEY_TAB;
-  if (key == 95) //_
+  if (key == 16)
     return KEY_RSHIFT;
-  return tolower(key);
+  return 0;
+  //return tolower(key);
 }
 
 void DG_DrawFrame() {
-  EM_ASM({
-    for (let key of Object.keys(pressed_keys)) {
-      key_queue.push([key, !!pressed_keys[key]]);
-
-      if (pressed_keys[key] === 0)
-        delete pressed_keys[key];
-      if (pressed_keys[key] === 2) 
-        pressed_keys[key] = 0;
-    }
-  });
-
   int framebuffer_len = DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4;
   EM_ASM({
-    update_framebuffer($0, $1, $2, $3);
-  }, DG_ScreenBuffer, framebuffer_len, DOOMGENERIC_RESX, DOOMGENERIC_RESY);
+    update_framebuffer($0, $1);
+  }, DG_ScreenBuffer, framebuffer_len);
 }
 
 void doomjs_tick() {
   int start = get_time();
   doomgeneric_Tick();
   int end = get_time();
+  if (end - start == 0)
+    return;
   frame_count ++;
 
   if (frame_count % 30 == 0) {
     int fps = 1000 / (end - start);
+    if (fps > TARGET_FPS)
+      fps = TARGET_FPS;
     printf("frame time: %i ms (%i fps)\n", end - start, fps);
   }
 }
@@ -103,17 +99,10 @@ int main(int argc, char **argv) {
     create_framebuffer($0, $1);
   }, DOOMGENERIC_RESX, DOOMGENERIC_RESY);
 
-  EM_ASM({
-    write_file(file_name, file_data);
-    if (file2_data) {
-      write_file(file2_name, file2_data);    
-    }
-  });
-
   doomgeneric_Create(argc, argv);
 
   EM_ASM({
-    app.setInterval("_doomjs_tick()", 0);
-  });
+    setInterval(_doomjs_tick, 1000 / $0);
+  }, TARGET_FPS);
   return 0;
 }

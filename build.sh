@@ -20,8 +20,9 @@ if [ "$1" = "clean" ]; then
 fi
 emmake make -C doomgeneric -f Makefile_html -j$(nproc --all)
 
-#mkdir -p out
-#cp web/* out/
+mkdir -p out
+cp web/* out/
+cat pre.js doomgeneric/doomgeneric.js > out/compiled.js
 
 #python3 embed_file.py file_template.js doomgeneric/doom1.wad out/data.js
 #cat pre.js out/data.js doomgeneric/doomgeneric.js > out/compiled.js

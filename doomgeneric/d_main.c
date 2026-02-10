@@ -184,6 +184,8 @@ void display_wipe() {
     int nowtime = I_GetTime ();
     int tics = nowtime - wipestart;
     wipestart = nowtime;
+    if (tics == 0)
+        return;
     done = wipe_ScreenWipe(wipe_Melt, 0, 0, SCREENWIDTH, SCREENHEIGHT, tics);
     I_UpdateNoBlit ();
     M_Drawer ();                            // menu is drawn even on top of wipes

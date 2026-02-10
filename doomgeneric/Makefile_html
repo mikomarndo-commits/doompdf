@@ -6,8 +6,8 @@ else
 endif
 
 CC=emcc
-CFLAGS+=-static 
-LDFLAGS+=-sSINGLE_FILE=1 '-sEXPORTED_FUNCTIONS=[_main,_doomjs_tick,_key_to_doomkey]' --embed-file doom1.wad
+CFLAGS+=-static -g
+LDFLAGS+=-sSINGLE_FILE=1 '-sEXPORTED_FUNCTIONS=[_main,_doomjs_tick,_key_to_doomkey]' --embed-file doom1.wad -g
 LIBS+=-lm -lc
 
 # subdirectory for objects

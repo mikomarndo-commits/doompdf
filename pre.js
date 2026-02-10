@@ -1,115 +1,57 @@
 var Module = {};
-var lines = [];
-var js_buffer = [];
-var pressed_keys = {};
-var key_queue = [];
+let framebuffer_img = document.getElementById("framebuffer_img");
+let img_data = null;
+let img_header = new Uint8Array(54);
+let blob_url = null;
+let key_queue = [];
 
-function print_msg(msg) {
-  lines.push(msg);
-  if (lines.length > 25) 
-    lines.shift();
-  
-  for (var i = 0; i < lines.length; i++) {
-    var row = lines[i];
-    globalThis.getField("console_"+(25-i-1)).value = row;
+document.addEventListener("keydown", (event) => {
+  if (event.keyCode === 9) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    document.body.focus();
   }
-}
-
-Module.print = function(msg) {
-  let max_len = 80;
-  let num_lines = Math.ceil(msg.length / max_len);
-  
-  for (let i = 0, o = 0; i < num_lines; ++i, o += max_len) {
-    print_msg(msg.substr(o, max_len));
-  }
-}
-Module.printErr = function(msg) {
-  print_msg(msg);
-}
-
-function key_pressed(key_str) {
-  if ("WASD".includes(key_str)) {
-    key_str = key_str.toLowerCase();
-    key_pressed("_") //placeholder for shift;
-  }
-  let keycode = key_str.charCodeAt(0);
-  let doomkey = _key_to_doomkey(keycode);
-  print_msg("pressed: " + key_str + " " + keycode + " ");
-  if (doomkey === -1) 
-    return;
-
-  pressed_keys[doomkey] = 2;
-}
-
-function key_down(key_str) {
-  let keycode = key_str.charCodeAt(0);
-  let doomkey = _key_to_doomkey(keycode);
-  print_msg("key down: " + key_str + " " + keycode + " ");
-  if (doomkey === -1) 
-    return;
-  pressed_keys[doomkey] = 1;
-}
-
-function key_up(key_str) {
-  let keycode = key_str.charCodeAt(0);
-  let doomkey = _key_to_doomkey(keycode);
-  print_msg("key up: " + key_str + " " + keycode + " ");
-  if (doomkey === -1) 
-    return;
-  pressed_keys[doomkey] = 0;
-}
-
-function reset_input_box() {
-  globalThis.getField("key_input").value = "Type here for keyboard controls.";
-}
-app.setInterval("reset_input_box()", 1000);
-
-function write_file(filename, data) {
-  let stream = FS.open("/"+filename, "w+");
-  FS.write(stream, data, 0, data.length, 0);
-  FS.close(stream);
-}
+  let doomkey = _key_to_doomkey(event.keyCode);
+  key_queue.push([doomkey, 1]);
+});
+document.addEventListener("keyup", (event) => {
+  let doomkey = _key_to_doomkey(event.keyCode);
+  key_queue.push([doomkey, 0]);
+});
 
 function create_framebuffer(width, height) {
-  js_buffer = [];
-  for (let y=0; y < height; y++) {
-    let row = Array(width);
-    for (let x=0; x < width; x++) {
-      row[x] = "_";
-    }
-    js_buffer.push(row);
-  }
+  framebuffer_img.width = width;
+  framebuffer_img.height = height;
+  
+  let bitmap_size = width * height * 4;
+  let size = img_header.length + bitmap_size;
+  let view = new DataView(img_header.buffer);
+
+  //bmp header
+  view.setUint16(0x00, 0x424d);
+  view.setUint32(0x02, size, true);
+  view.setUint32(0x0a, img_header.length, true);
+  
+  //dib header
+  view.setUint32(0x0e, 40, true);
+  view.setInt32(0x12, width, true);
+  view.setInt32(0x16, -height, true);
+  view.setUint16(0x1a, 1, true);
+  view.setUint16(0x1c, 32, true);
+
+  view.setUint32(0x22, bitmap_size, true);
+
+  img_data = new Uint8Array(size);
+  img_data.set(img_header);
 }
 
-function update_framebuffer(framebuffer_ptr, framebuffer_len, width, height) {
+function update_framebuffer(framebuffer_ptr, framebuffer_len) {
   let framebuffer = Module.HEAPU8.subarray(framebuffer_ptr, framebuffer_ptr + framebuffer_len);
-  for (let y=0; y < height; y++) {
-    let row = js_buffer[y];
-    let old_row = row.join("");
-    for (let x=0; x < width; x++) {
-      let index = (y * width + x) * 4;
-      let r = framebuffer[index];
-      let g = framebuffer[index+1];
-      let b = framebuffer[index+2];
-      let avg = (r + g + b) / 3;
-      //let avg = (x/width) * 255; // (uncomment for a gradient test)
+  img_data.set(framebuffer, img_header.length);
 
-      //note - these ascii characters were all picked because they have the same width in the sans-serif font that chrome decided to use for text fields
-      if (avg > 200)
-        row[x] = "_";
-      else if (avg > 150)
-        row[x] = "::";
-      else if (avg > 100)
-        row[x] = "?";
-      else if (avg > 50)
-        row[x] = "//";
-      else if (avg > 25)
-        row[x] = "b";
-      else
-        row[x] = "#";
-    }
-    let row_str = row.join("");
-    if (row_str !== old_row)
-      globalThis.getField("field_"+(height-y-1)).value = row_str;
-  }
+  if (blob_url) 
+    URL.revokeObjectURL(blob_url);
+  let blob = new Blob([img_data]);
+  blob_url = URL.createObjectURL(blob);
+  framebuffer_img.src = blob_url;
 }
