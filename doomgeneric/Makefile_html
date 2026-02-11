@@ -9,7 +9,7 @@ SDL_CFLAGS = -sUSE_SDL=2 -sUSE_SDL_MIXER=2 -s SDL2_MIXER_FORMATS='["mid"]'
 SDL_LIBS = -sUSE_SDL=2 -lSDL2_mixer
 
 CC=emcc
-CFLAGS+=-static -g -DFEATURE_SOUND $(SDL_CFLAGS)
+CFLAGS+=-static -DFEATURE_SOUND $(SDL_CFLAGS)
 LDFLAGS+=-sSINGLE_FILE=1 '-sEXPORTED_FUNCTIONS=[_main,_doomjs_tick,_key_to_doomkey]' -sEXPORTED_RUNTIME_METHODS=[FS] --embed-file doom1.wad --embed-file dgguspat
 LIBS+=-lm -lc $(SDL_LIBS)
 

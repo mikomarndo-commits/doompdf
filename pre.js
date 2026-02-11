@@ -1,5 +1,7 @@
 var Module = {};
 let framebuffer_img = document.getElementById("framebuffer_img");
+let main_table = document.getElementById("main_table");
+
 let img_data = null;
 let img_header = new Uint8Array(54);
 let blob_url = null;
@@ -20,9 +22,6 @@ document.addEventListener("keyup", (event) => {
 });
 
 function create_framebuffer(width, height) {
-  framebuffer_img.width = width;
-  framebuffer_img.height = height;
-  
   let bitmap_size = width * height * 4;
   let size = img_header.length + bitmap_size;
   let view = new DataView(img_header.buffer);
@@ -51,7 +50,7 @@ function update_framebuffer(framebuffer_ptr, framebuffer_len) {
 
   if (blob_url) 
     URL.revokeObjectURL(blob_url);
-  let blob = new Blob([img_data]);
+  let blob = new Blob([img_data], {type: "image/bmp"});
   blob_url = URL.createObjectURL(blob);
   framebuffer_img.src = blob_url;
 }
@@ -59,3 +58,4 @@ function update_framebuffer(framebuffer_ptr, framebuffer_len) {
 Module.preRun = () => {
   ENV.TIMIDITY_CFG = "dgguspat/timid_d1.cfg"
 };
+

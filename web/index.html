@@ -2,10 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Doom</title>
+    <meta name="viewport" content="width=device-width">
+    <title>Doom HTML</title>
     <script src="/compiled.js" defer></script>
   </head>
-  <body tabindex="0">
-    <img id="framebuffer_img">
+  <body tabindex="0" bgcolor="#000000">
+    <font size="2" color="#ffffff" face="courier,monospace">
+      <center>
+        <table id="main_table" border="1" cellpadding="8px" width="640px">
+          <tr>
+            <td colspan=2>
+              <img id="framebuffer_img" decoding="sync" width="640px" height="400px">
+            </td>
+          </tr>
+          <tr>
+            <td width="190px">
+              <font size="5"><p>DoomHTML</p></font>
+            </td>
+            <td rowspan="2" valign="top">
+              <p>This is a Doom source port that runs inside an HTML file, with no CSS or &lt;canvas&gt; tag used.</p>
+              <p>It was made for the <a href="https://flavorless.hackclub.com/" target="_blank">Hack Club Flavorless</a> event, which was a challenge to create a website with only HTML and JavaScript.</p>
+              <p>This port works by setting an &lt;img&gt; src to dynamically generated BMP image files in order to display the framebuffer. Emscripten is used to compile <a href="https://github.com/ozkl/doomgeneric" target="_blank">doomgeneric</a> to JS and WASM.</p>
+              <p>Source code: <a href="https://github.com/ading2210/doomhtml" target="_blank">https://github.com/ading2210/doomhtml</a></p>
+            </td>            
+          </tr>
+          <tr>
+            <td>
+              <p>
+                <u>Controls:<br></u>
+                <nobr>Arrow keys = movement,</nobr> <nobr>space = use,</nobr> <nobr>ctr = fire,</nobr> <nobr>shift = run,</nobr> <nobr>tab = map</nobr>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </center>
+    </font>
+
+    <script>
+      function set_margins() {
+        let top_margin = (window.innerHeight - document.body.clientHeight) / 2;
+        document.body.setAttribute("topmargin", top_margin);
+      }
+      window.addEventListener("resize", set_margins);
+      set_margins();
+    </script>
   </body>
 </html>

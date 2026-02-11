@@ -67,8 +67,7 @@ int key_to_doomkey(int key) {
     return KEY_TAB;
   if (key == 16)
     return KEY_RSHIFT;
-  return 0;
-  //return tolower(key);
+  return tolower(key);
 }
 
 void DG_DrawFrame() {
@@ -86,7 +85,7 @@ void doomjs_tick() {
     return;
   frame_count ++;
 
-  if (frame_count % 30 == 0) {
+  if (frame_count % 300 == 0) {
     int fps = 1000 / (end - start);
     if (fps > TARGET_FPS)
       fps = TARGET_FPS;
