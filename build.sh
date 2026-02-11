@@ -15,6 +15,12 @@ source ./emsdk/emsdk_env.sh >/dev/null 2>&1
 if [ ! -f "doomgeneric/doom1.wad" ]; then
   wget "https://distro.ibiblio.org/slitaz/sources/packages/d/doom1.wad" -O "doomgeneric/doom1.wad"
 fi
+if [ ! -d "doomgeneric/dgguspat" ]; then
+  wget "https://youfailit.net/pub/idgames/music/dgguspat.zip" -O "/tmp/dgguspat.zip"
+  mkdir -p "doomgeneric/dgguspat"
+  unzip "/tmp/dgguspat.zip" -d "doomgeneric/dgguspat"
+  rm -rf "/tmp/dgguspat.zip"
+fi
 if [ "$1" = "clean" ]; then
   emmake make -C doomgeneric -f Makefile_html clean
 fi

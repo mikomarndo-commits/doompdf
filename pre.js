@@ -55,3 +55,7 @@ function update_framebuffer(framebuffer_ptr, framebuffer_len) {
   blob_url = URL.createObjectURL(blob);
   framebuffer_img.src = blob_url;
 }
+
+Module.preRun = () => {
+  ENV.TIMIDITY_CFG = "dgguspat/timid_d1.cfg"
+};
