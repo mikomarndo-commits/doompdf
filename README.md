@@ -4,6 +4,8 @@ This is a Doom source port that runs inside an HTML file, with no CSS or `<canva
 
 It was made for the [Hack Club Flavorless](https://flavorless.hackclub.com/) event, which was a challenge to create a website with only HTML and JavaScript.
 
+Play it here: [doom.html](https://doomhtml.pages.dev/doom.html)
+
 ## Explanation
 This port works by setting an `<img>` src to dynamically generated BMP image files in order to display the framebuffer. Emscripten is used to compile [doomgeneric](https://github.com/ozkl/doomgeneric) to JS and WASM.
 
@@ -13,6 +15,9 @@ Audio and music are enabled, using the [Gravis Ultrasound soundfont](https://www
 
 Clone this repository and run the following commands:
 ```
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install -r requirements.txt
 env CFLAGS=-O3 ./build.sh
 ```
 

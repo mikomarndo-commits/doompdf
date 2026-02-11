@@ -30,9 +30,4 @@ mkdir -p out
 cp web/* out/
 cat pre.js doomgeneric/doomgeneric.js > out/compiled.js
 
-#python3 embed_file.py file_template.js doomgeneric/doom1.wad out/data.js
-#cat pre.js out/data.js doomgeneric/doomgeneric.js > out/compiled.js
-#cat pre.js file_template.js doomgeneric/doomgeneric.js > out/compiled_nowad.js
-
-#python3 generate.py out/compiled.js out/doom.pdf
-#python3 generate.py out/compiled_nowad.js out/doom_nowad.pdf
+python3 inline.py out/index.html out/doom.html
