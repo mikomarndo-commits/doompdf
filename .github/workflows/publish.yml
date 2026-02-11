@@ -13,9 +13,6 @@ jobs:
 
       - name: Build
         run: |
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip3 install -r requirements.txt
           env CFLAGS=-O3 ./build.sh
           du -sh out/*
 
@@ -24,5 +21,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: b8079ffa92c97010f2a8d759e24cc782
-          projectName: doompdf
+          projectName: doomhtml
           directory: out
