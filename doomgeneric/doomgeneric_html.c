@@ -47,21 +47,25 @@ int DG_GetKey(int* pressed, unsigned char* doomKey) {
 void DG_SetWindowTitle(const char * title) {}
 
 int key_to_doomkey(int key) {
-  if (key == 37)
+  if (key == 37) //left arrow
     return KEY_LEFTARROW;
-  if (key == 39)
+  if (key == 39) //right arrow
     return KEY_RIGHTARROW;
-  if (key == 38)
+  if (key == 38 || key == 87) //up arrow, w
     return KEY_UPARROW;
-  if (key == 40)
+  if (key == 40 || key == 83) //down arrow, s
     return KEY_DOWNARROW;
+  if (key == 65) //a
+    return KEY_STRAFE_L;
+  if (key == 68) //d
+    return KEY_STRAFE_R;
   if (key == 27)
     return KEY_ESCAPE;
-  if (key == 13)
+  if (key == 13 || key == 90) //enter, z
     return KEY_ENTER;
-  if (key == 32)
+  if (key == 69) //e
     return KEY_USE;
-  if (key == 17)
+  if (key == 32) //space
     return KEY_FIRE;
   if (key == 9)
     return KEY_TAB;
