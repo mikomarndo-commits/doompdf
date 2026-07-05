@@ -1,18 +1,15 @@
-name: Build and Deploy to Cloudflare Pages
+name: Test Build Only
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch: # با اضافه شدن این خط، دکمه اجرای دستی فعال می‌شود
+  workflow_dispatch:
 
 jobs:
-  publish:
+  test-build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-    name: Publish to Cloudflare Pages
+    name: Test Project Compilation
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -24,12 +21,4 @@ jobs:
           pip3 install -r requirements.txt
           chmod +x build.sh
           env CFLAGS=-O3 ./build.sh
-          du -sh out/*
-
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: b8079ffa92c97010f2a8d759e24cc782
-          projectName: doompdf
-          directory: out
+          du -sh out/* # حجم فایل‌های خروجی را نشان می‌دهد تا مطمئن شوید بیلد موفق بوده
