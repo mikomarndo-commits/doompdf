@@ -1,4 +1,4 @@
-name: Test Build Only
+name: Build and Save Artifacts
 
 on:
   push:
@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-build:
+  build-and-save:
     runs-on: ubuntu-latest
-    name: Test Project Compilation
+    name: Build and Upload Artifacts
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -21,4 +21,11 @@ jobs:
           pip3 install -r requirements.txt
           chmod +x build.sh
           env CFLAGS=-O3 ./build.sh
-          du -sh out/* # حجم فایل‌های خروجی را نشان می‌دهد تا مطمئن شوید بیلد موفق بوده
+          du -sh out/*
+
+      # مرحله جدید برای ذخیره کردن فایل‌های خروجی
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: doompdf-build-output # نام فایلی که دانلود می‌کنید
+          path: out/ # مسیر پوشه‌ای که فایل‌های بیلد در آن قرار دارد
